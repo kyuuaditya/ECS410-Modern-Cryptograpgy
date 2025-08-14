@@ -1,2 +1,2 @@
 # ECS410-Modern-Cryptograpgy
-this is a collection of the codes I made along the way while studying modern cryptography during my ecs410 class in semester 8 at IISERB.
+Collection of Codes of various concepts of Modern Cryptography I studied in ECS 410 at IISERB.
