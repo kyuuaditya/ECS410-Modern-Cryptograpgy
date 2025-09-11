@@ -13,14 +13,14 @@ public:
             if (islower(character)) {
                 size_t index = alphabets_lower.find(character);
                 if (index != std::string::npos) {
-                    result += alphabets_lower[(index + key) % alphabets_lower.size()];
+                    result += alphabets_lower[( (index + key + alphabets_lower.size()) % alphabets_lower.size() )];
                 } else {
                     result += character; // for non-alphabetic characters
                 }
             } else if (isupper(character)) {
                 size_t index = alphabets_upper.find(character);
                 if (index != std::string::npos) {
-                    result += alphabets_upper[(index + key) % alphabets_upper.size()];
+                    result += alphabets_lower[( (index + key + alphabets_lower.size()) % alphabets_lower.size() )];
                 } else {
                     result += character; // for non-alphabetic characters
                 }
@@ -29,5 +29,9 @@ public:
             }
         }
         return result;
+    }
+
+    std::string shift_cypher_decode(const std::string& message, int key) {
+        return shift_cypher(message, -key);
     }
 };
