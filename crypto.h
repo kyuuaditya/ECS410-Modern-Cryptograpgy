@@ -1,11 +1,39 @@
+#include <algorithm>
 #include <iostream>
 #include <string>
 #include <cctype>
 
 class Crypto {
 public:
-    std::string alphabets_lower = "abcdefghijklmnopqrstuvwxyz";
-    std::string alphabets_upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    std::string alphabets = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+    ///function to check if the input message is valid (only contains alphabetic characters, no-spaces and uppercase only)
+    bool is_valid_message(const std::string& message) {
+        for (char c : message) {
+            if (!std::isupper(c) || !std::isalpha(c)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /// function to convert a string to uppercase
+    std::string to_uppercase(const std::string& input) {
+        std::string result = input;
+        std::transform(result.begin(), result.end(), result.begin(), [](unsigned char c) { return std::toupper(c); });
+        return result;
+    }
+
+    /// function to remove spaces and non-alphabetic characters from a string
+    std::string alpha_only(const std::string& input) {
+        std::string result = input;
+        result.erase(std::remove_if(result.begin(), result.end(), [](char c) {
+            return !std::isalpha(c) || std::isspace(c);
+            }), result.end());
+        return result;
+    }
+
+    //----------------------------------------------------------------------------------------------------------------
 
     /// shift_cipher shifts each letter in the message by the given key.
     /// @param message The message to be ciphered. (only alphabetic characters are shifted.)
@@ -14,35 +42,35 @@ public:
     std::string shift_cipher(const std::string& message, int key) {
         std::string result;
 
-        for (char character : message) {
-            if (islower(character)) {
-                size_t index = alphabets_lower.find(character);
-                if (index != std::string::npos) {
-                    result += alphabets_lower[( (index + key + alphabets_lower.size()) % alphabets_lower.size() )];
-                } else {
-                    result += character; // for non-alphabetic characters
-                }
-            } else if (isupper(character)) {
-                size_t index = alphabets_upper.find(character);
-                if (index != std::string::npos) {
-                    result += alphabets_lower[( (index + key + alphabets_lower.size()) % alphabets_lower.size() )];
-                } else {
-                    result += character; // for non-alphabetic characters
-                }
-            } else {
-                result += character; // for non-alphabetic characters
-            }
+        if (!is_valid_message(message)) { // return error message if message is not valid
+            std::cerr << "Error: Message must contain only uppercase alphabetic characters with no spaces." << std::endl;
+            return "";
         }
+
+        for (char character : message) {
+            size_t index = alphabets.find(character); // find index in alphabets.
+            result += alphabets[((index + key + alphabets.size()) % alphabets.size())];
+        }
+
         return result;
     }
+
+    //----------------------------------------------------------------------------------------------------------------
 
     /// shift_cipher_decode decodes a message that was encoded using the shift_cipher with the given key.
     /// @param message The message to be decoded.
     /// @param key The shift key used during encoding.
     /// @return The decoded message.
-    std::string shift_cipher_decode(const std::string& message, int key) {
-        return shift_cipher(message, -key);
+    std::string shift_cipher_decode(const std::string& cipher_text, int key) {
+        if (!is_valid_message(cipher_text)) { // return error message if message is not valid
+            std::cerr << "Error: Message must contain only uppercase alphabetic characters with no spaces." << std::endl;
+            return "";
+        }
+
+        return shift_cipher(cipher_text, -key);
     }
+
+    //----------------------------------------------------------------------------------------------------------------
 
     /// key should be a 26-character string representing the substitution alphabets.
     /// @param message The message to be ciphered.
@@ -50,26 +78,48 @@ public:
     /// @return The ciphered message.
     std::string substitution_cipher(const std::string& message, const std::string& key) {
         std::string result;
-        
-        for (char character : message) {
-            if (islower(character)) {
-                size_t index = alphabets_lower.find(character);
-                if (index != std::string::npos && key.size() == alphabets_lower.size()) {
-                    result += key[index];
-                } else {
-                    result += character;
-                }
-            } else if (isupper(character)) {
-                size_t index = alphabets_upper.find(character);
-                if (index != std::string::npos && key.size() == alphabets_upper.size()) {
-                    result += key[index];
-                } else {
-                    result += character;
-                }
-            } else {
-                result += character;
-            }
+        std::string message_modified;
+
+        if (!is_valid_message(message)) {
+            std::cerr << "Error: Message must contain only uppercase alphabetic characters with no spaces." << std::endl;
+            return "";
         }
+        if (key.size() != alphabets.size()) { // return error message if key size is not 26
+            std::cerr << "Error: Key size must be 26 characters." << std::endl;
+            return "";
+        }
+
+        for (char character : message) {
+            size_t index = alphabets.find(character);
+            result += key[index];
+        }
+
         return result;
     }
+
+    //----------------------------------------------------------------------------------------------------------------
+
+    /// substitution_cipher_decode decodes a message that was encoded using the substitution_cipher with the given key.
+    /// @param message The message to be decoded.
+    /// @param key The substitution key used during encoding.
+    /// @return The decoded message.
+    std::string substitution_cipher_decode(const std::string& cipher_text, const std::string& key) {
+        std::string reverse_key;
+
+        if (!is_valid_message(cipher_text)) {
+            std::cerr << "Error: Message must contain only uppercase alphabetic characters with no spaces." << std::endl;
+            return "";
+        }
+        if (key.size() != alphabets.size()) { // return error message if key size is not 26
+            std::cerr << "Error: Key size must be 26 characters." << std::endl;
+            return "";
+        }
+
+        for (char character : cipher_text) {
+            size_t index = key.find(character);
+            reverse_key += alphabets[index];
+        }
+        return reverse_key;
+    }
+
 };

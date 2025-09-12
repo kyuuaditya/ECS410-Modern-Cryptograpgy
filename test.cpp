@@ -5,12 +5,12 @@
 int main() {
     Crypto crypto;
 
-    // Example usage of shift_cypher
-    std::string message;
+    // Example usage of shift_cipher
+    std::string message = "ASDFGHJKL";
     int key;
 
-    std::cout << "Enter message: ";
-    std::getline(std::cin, message);
+    // std::cout << "Enter message: ";
+    // std::getline(std::cin, message);
     // std::cout << "Enter key: ";
     // std::cin >> key;
 
@@ -26,10 +26,14 @@ int main() {
     // ------------------------------------------------------------------------------------------------
 
     // test for substitution cipher
-    std::string substitution_key = "QWERTYUIOPASDFGHJKLZXCVBNM"; // simple reverse alphabet substitution
+    std::string substitution_key = "QWERTYUIOPASDFGHJKLZXCVBNM";
     std::string substituted_message = crypto.substitution_cipher(message, substitution_key);
     std::cout << "Substituted message: " << substituted_message << std::endl;
 
+    std::string deciphered_message = crypto.substitution_cipher_decode(substituted_message, substitution_key);
+    std::cout << "Deciphered message: " << deciphered_message << std::endl;
+
     // ------------------------------------------------------------------------------------------------
+
     return 0;
 }
