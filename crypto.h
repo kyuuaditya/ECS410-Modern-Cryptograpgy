@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <cctype>
+#include <numeric> // for std::gcd
 
 class Crypto {
 public:
@@ -121,5 +122,70 @@ public:
         }
         return reverse_key;
     }
+
+    //----------------------------------------------------------------------------------------------------------------
+
+    /// affine_cipher is a type of monoalphabetic substitution cipher where each letter in an alphabet is mapped using a mathematical function.
+    /// @param message The message to be ciphered.
+    /// @param a The multiplicative key. (must be coprime with 26)
+    /// @param b The additive key. (integer < 26)
+    /// @return The ciphered message.
+    std::string affine_cipher(const std::string& message, int a, int b) {
+        std::string result;
+
+        if (!is_valid_message(message)) { // return error message if message is not valid
+            std::cerr << "Error: Message must contain only uppercase alphabetic characters with no spaces." << std::endl;
+            return "";
+        }
+        if (std::gcd(a, 26) != 1) { // return error message if a is not coprime with 26
+            std::cerr << "Error: 'a' must be coprime with 26." << std::endl;
+            return "";
+        }
+
+        for (char character : message) {
+            size_t index = alphabets.find(character);
+            result += alphabets[((a * index + b) % alphabets.size())];
+        }
+
+        return result;
+    }
+
+    //----------------------------------------------------------------------------------------------------------------
+
+    /// affine_cipher_decode decodes the cipher text that was encoded using the affine_cipher with the given keys.
+    /// @param cipher_text The cipher text to be decoded.
+    /// @param a The multiplicative key used during encoding.
+    /// @param b The additive key used during encoding.
+    /// @return The decoded message.
+    std::string affine_cipher_decode(const std::string& cipher_text, int a, int b) {
+        std::string result;
+        int a_inv = 0;
+
+        if (!is_valid_message(cipher_text)) { // return error message if message is not valid
+            std::cerr << "Error: Message must contain only uppercase alphabetic characters with no spaces." << std::endl;
+            return "";
+        }
+        if (std::gcd(a, 26) != 1) { // return error message if a is not coprime with 26
+            std::cerr << "Error: 'a' must be coprime with 26." << std::endl;
+            return "";
+        }
+
+        // Calculate modular multiplicative inverse of a under modulo 26
+        for (int i = 0; i < 26; i++) {
+            if ((a * i) % 26 == 1) {
+                a_inv = i;
+                break;
+            }
+        }
+
+        for (char character : cipher_text) {
+            size_t index = alphabets.find(character);
+            result += alphabets[((a_inv * (index - b + alphabets.size())) % alphabets.size())];
+        }
+
+        return result;
+    }
+
+    //----------------------------------------------------------------------------------------------------------------
 
 };
