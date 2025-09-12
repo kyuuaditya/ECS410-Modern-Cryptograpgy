@@ -188,4 +188,69 @@ public:
 
     //----------------------------------------------------------------------------------------------------------------
 
+    /// vigenere_cipher uses a keyword to shift letters in the message.
+    /// @param message The message to be ciphered.
+    /// @param key The keyword used for shifting.
+    /// @return The ciphered message.
+    std::string vigenere_cipher(const std::string& message, const std::string& key) {
+        std::string result;
+        std::string message_modified;
+
+        if (!is_valid_message(message)) { // return error message if message is not valid
+            std::cerr << "Error: Message must contain only uppercase alphabetic characters with no spaces." << std::endl;
+            return "";
+        }
+        if (!is_valid_message(key)) { // return error message if key is not valid
+            std::cerr << "Error: Key must contain only uppercase alphabetic characters with no spaces." << std::endl;
+            return "";
+        }
+
+        // Repeat the key to match the length of the message
+        std::string extended_key;
+        for (size_t i = 0; i < message.size(); i++) {
+            extended_key += key[i % key.size()];
+        }
+
+        for (size_t i = 0; i < message.size(); i++) {
+            size_t message_index = alphabets.find(message[i]);
+            size_t key_index = alphabets.find(extended_key[i]);
+            result += alphabets[(message_index + key_index) % alphabets.size()];
+        }
+
+        return result;
+    }
+
+    //----------------------------------------------------------------------------------------------------------------
+
+    /// vigenere_cipher_decode decodes the cipher text that was encoded using the vigenere_cipher with the given key.
+    /// @param cipher_text The cipher text to be decoded.
+    /// @param key The keyword used during encoding.
+    /// @return The decoded message.
+    std::string vigenere_cipher_decode(const std::string& cipher_text, const std::string& key) {
+        std::string result;
+
+        if (!is_valid_message(cipher_text)) { // return error message if message is not valid
+            std::cerr << "Error: Message must contain only uppercase alphabetic characters with no spaces." << std::endl;
+            return "";
+        }
+        if (!is_valid_message(key)) { // return error message if key is not valid
+            std::cerr << "Error: Key must contain only uppercase alphabetic characters with no spaces." << std::endl;
+            return "";
+        }
+
+        // Repeat the key to match the length of the cipher_text
+        std::string extended_key;
+        for (size_t i = 0; i < cipher_text.size(); i++) {
+            extended_key += key[i % key.size()];
+        }
+
+        for (size_t i = 0; i < cipher_text.size(); i++) {
+            size_t cipher_index = alphabets.find(cipher_text[i]);
+            size_t key_index = alphabets.find(extended_key[i]);
+            result += alphabets[(cipher_index - key_index + alphabets.size()) % alphabets.size()];
+        }
+
+        return result;
+    }
+
 };
