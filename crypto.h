@@ -7,7 +7,11 @@ public:
     std::string alphabets_lower = "abcdefghijklmnopqrstuvwxyz";
     std::string alphabets_upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-    std::string shift_cypher(const std::string& message, int key) {
+    /// shift_cipher shifts each letter in the message by the given key.
+    /// @param message The message to be ciphered. (only alphabetic characters are shifted.)
+    /// @param key The shift key. (integer < 26)
+    /// @return The ciphered message.
+    std::string shift_cipher(const std::string& message, int key) {
         std::string result;
 
         for (char character : message) {
@@ -32,11 +36,19 @@ public:
         return result;
     }
 
-    std::string shift_cypher_decode(const std::string& message, int key) {
-        return shift_cypher(message, -key);
+    /// shift_cipher_decode decodes a message that was encoded using the shift_cipher with the given key.
+    /// @param message The message to be decoded.
+    /// @param key The shift key used during encoding.
+    /// @return The decoded message.
+    std::string shift_cipher_decode(const std::string& message, int key) {
+        return shift_cipher(message, -key);
     }
 
-    std::string substitution_cypher(const std::string& message, const std::string& key) {
+    /// key should be a 26-character string representing the substitution alphabets.
+    /// @param message The message to be ciphered.
+    /// @param key The substitution key.
+    /// @return The ciphered message.
+    std::string substitution_cipher(const std::string& message, const std::string& key) {
         std::string result;
         
         for (char character : message) {
