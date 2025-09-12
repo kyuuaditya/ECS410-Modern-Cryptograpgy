@@ -72,31 +72,69 @@ int main() {
 
     std::string alphabets = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-    auto start = std::chrono::high_resolution_clock::now();
+    // auto start = std::chrono::high_resolution_clock::now();
 
-    // testing index of coincidence for different key sizes.
-    size_t counter = 0;
-    for (char character : alphabets) {
-        for (char character2 : alphabets) {
-            for (char character3 : alphabets) {
-                for (char character4 : alphabets) {
-                    for (char character5 : alphabets) {
-                        std::string key = std::string{ character } + std::string{ character2 } + std::string{ character3 } + std::string{ character4 } + std::string{ character5 };
-                        double test_text_IC = crypto.index_of_coincidence(crypto.stream_cipher_hw1_decode(ciphered_message, key));
-                        if (test_text_IC > 0.060) {
-                            counter++;
-                        }
-                    }
-                }
+    // // testing index of coincidence for different key sizes.
+    // size_t counter = 0;
+    // for (char character : alphabets) {
+    //     for (char character2 : alphabets) {
+    //         for (char character3 : alphabets) {
+    //             for (char character4 : alphabets) {
+    //                 for (char character5 : alphabets) {
+    //                     std::string key = std::string{ character } + std::string{ character2 } + std::string{ character3 } + std::string{ character4 } + std::string{ character5 };
+    //                     double test_text_IC = crypto.index_of_coincidence(crypto.stream_cipher_hw1_decode(ciphered_message, key));
+    //                     if (test_text_IC > 0.060) {
+    //                         counter++;
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
+
+    // // if the counter is giving good numbers then in that case. 
+    // std::cout << counter << "/" << 26 * 26 * 26 * 26 * 26 << std::endl;
+
+    // auto end = std::chrono::high_resolution_clock::now();
+    // auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start) / 1000; // in milliseconds.
+    // std::cout << "End of Code, Time taken : " << duration.count() << " milliseconds" << std::endl;
+
+    //----------------------------------------------------------------------------------------------------------------
+
+    std::string candidateKey = "";
+    int L = 5; // fixed key length determined in the above step.
+
+    // Breaking the stream cipher with key length L.
+    for (int pos = 0; pos < L; pos++) {
+        double bestScore = 1e18;
+        char bestChar;
+
+        // collect subsequence for this position.
+        std::string subseq = "";
+        for (int i = pos; i < ciphered_message.size(); i += L) {
+            subseq.push_back(ciphered_message[i]);
+        }
+
+        // test all possible key chars
+        for (char character : alphabets) {
+            std::string decodedSubseq = crypto.stream_cipher_hw1_decode(subseq, std::string{ character });
+
+            double score = crypto.chi_squared_test(decodedSubseq);
+            if (score < bestScore) { // lower is better.
+                bestScore = score;
+                bestChar = character;
             }
         }
-    }
-    // if the counter is giving good numbers then in that case. 
-    std::cout << counter << "/" << 26 * 26 * 26 * 26 * 26 << std::endl;
 
-    auto end = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start) / 1000; // in milliseconds.
-    std::cout << "End of Code, Time taken : " << duration.count() << " milliseconds" << std::endl;
+        candidateKey.push_back(bestChar);
+        std::cout << "Position : " << pos << " Character : '" << bestChar << "' with chi² = " << bestScore << std::endl;
+    }
+
+    std::cout << "Candidate key = " << candidateKey << std::endl;
+    std::cout << "Deciphered text = " << crypto.stream_cipher_hw1_decode(ciphered_message, candidateKey) << std::endl;
+
+    //----------------------------------------------------------------------------------------------------------------
+
 
     return 0;
 }

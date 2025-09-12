@@ -3,10 +3,18 @@
 #include <string>
 #include <cctype>
 #include <numeric> // for std::gcd
+#include <vector>
 
 class Crypto {
 public:
+    // English alphabets
     std::string alphabets = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    // English letter frequencies (A–Z , normalized)
+    std::vector<double> englishFreq = {
+        0.082,0.015,0.028,0.043,0.127,0.022,0.020,0.061,0.070,0.002,
+        0.008,0.040,0.024,0.067,0.075,0.019,0.001,0.060,0.063,0.091,
+        0.028,0.010,0.023,0.001,0.020,0.001
+    };
 
     ///function to check if the input message is valid (only contains alphabetic characters, no-spaces and uppercase only)
     bool is_valid_message(const std::string& message) {
@@ -363,6 +371,32 @@ public:
 
         ic /= (n * (n - 1));
         return ic;
+    }
+
+    /// chi_squared_test calculates the Chi-squared statistic for the given text.
+    /// @param text The text to calculate the Chi-squared statistic for.
+    /// @return The Chi-squared statistic.
+    double chi_squared_test(const std::string& text) {
+        if (!is_valid_message(text)) { // return error message if message is not valid
+            std::cerr << "Error: Text must contain only uppercase alphabetic characters with no spaces." << std::endl;
+            return 0.0;
+        }
+        if (text.empty()) return 1e18;
+
+        int letter_count[26] = { 0 };
+        for (char c : text) {
+            letter_count[c - 'A']++; // calculated in ascii.
+        }
+
+        double n = static_cast<double>(text.size());
+        double chi_squared = 0.0;
+
+        for (int i = 0; i < 26; i++) {
+            double expected = englishFreq[i] * n;
+            chi_squared += ((letter_count[i] - expected) * (letter_count[i] - expected)) / (expected + 1e-9);
+        }
+
+        return chi_squared;
     }
 
 };
