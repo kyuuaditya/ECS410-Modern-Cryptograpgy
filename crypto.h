@@ -337,4 +337,32 @@ public:
         return result;
     }
 
+    //----------------------------------------------------------------------------------------------------------------
+
+    ///Index of coincidence tells the probability that two randomly selected letters from the text will be the same.
+    /// @param text The text to calculate the index of coincidence for.
+    /// @return The index of coincidence.
+    double index_of_coincidence(const std::string& text) {
+        if (!is_valid_message(text)) { // return error message if message is not valid
+            std::cerr << "Error: Text must contain only uppercase alphabetic characters with no spaces." << std::endl;
+            return 0.0;
+        }
+        if (text.empty()) return 0.0;
+
+        int letter_count[26] = { 0 };
+        for (char c : text) {
+            letter_count[c - 'A']++;
+        }
+
+        double n = static_cast<double>(text.size());
+        double ic = 0.0;
+
+        for (int count : letter_count) {
+            ic += count * (count - 1);
+        }
+
+        ic /= (n * (n - 1));
+        return ic;
+    }
+
 };
