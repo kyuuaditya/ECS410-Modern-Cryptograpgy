@@ -6,8 +6,9 @@ int main() {
     Crypto crypto;
 
     // Example usage of shift_cipher
-    std::string message = "THISCRYPTOSYSTEMISNOTSECURE";
+    std::string message = "THISISNOTAMESSAGESIKE";
     int key;
+    std::string ciphered_message = "JEJNGNXZWHHGWFSUKULJQACZKKJOAAHGKEMTAFGMKVRDOPXNEHEKZNKFSKIFRQVHHOVXINPHMRTJPYWQGJWPUUVKFPOAWPMRKKQZWLQDYAZDRMLPBJKJOBWIWPSEPVVQMBCRYVCRUZAAOUMBCHDAGDIEMSZFZHALIGKEMJJFPCIWKRMLMPINAYOFIREAOLDTHITDVRMSE";
 
     // std::cout << "Enter message: ";
     // std::getline(std::cin, message);
@@ -46,15 +47,23 @@ int main() {
 
     // ------------------------------------------------------------------------------------------------
 
-    // test for vigenere cipher
-    std::string vigenere_key = "CIPHER";
-    std::string vigenere_ciphered_message = crypto.vigenere_cipher(message, vigenere_key);
-    std::cout << "Vigenere Ciphered message: " << vigenere_ciphered_message << std::endl;
+    // // test for vigenere cipher
+    // std::string vigenere_key = "SUMMER";
+    // std::string vigenere_ciphered_message = crypto.vigenere_cipher(message, vigenere_key);
+    // std::cout << "Vigenere Ciphered message: " << vigenere_ciphered_message << std::endl;
 
-    std::string vigenere_deciphered_message = crypto.vigenere_cipher_decode(vigenere_ciphered_message, vigenere_key);
-    std::cout << "Vigenere Deciphered message: " << vigenere_deciphered_message << std::endl;
+    // // std::string vigenere_deciphered_message = crypto.vigenere_cipher_decode(vigenere_ciphered_message, vigenere_key);
+    // // std::cout << "Vigenere Deciphered message: " << vigenere_deciphered_message << std::endl;
 
     //----------------------------------------------------------------------------------------------------------------
+
+    // // test for stream cipher
+    std::string stream_key = "SUMMER";
+    // std::string stream_ciphered_message = crypto.stream_cipher_hw1(message, stream_key);
+    // std::cout << "Stream Ciphered message: " << stream_ciphered_message << std::endl;
+
+    std::string stream_deciphered_message = crypto.stream_cipher_hw1_decode(ciphered_message, stream_key);
+    std::cout << "Stream Deciphered message: " << stream_deciphered_message << std::endl;
 
     return 0;
 }

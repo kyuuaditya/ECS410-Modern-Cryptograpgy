@@ -253,4 +253,88 @@ public:
         return result;
     }
 
+    //----------------------------------------------------------------------------------------------------------------
+
+    /// This stream_cipher is defined as a modification of the Vigenere cipher. such that each time we use the keyword, we replace each letter by its successor modulo 26.
+    /// @param message The message to be ciphered.
+    /// @param key The keystream used for ciphering.
+    /// @return The ciphered message.
+    std::string stream_cipher_hw1(const std::string& message, const std::string& key) {
+        std::string result;
+
+        if (!is_valid_message(message)) { // return error message if message is not valid
+            std::cerr << "Error: Message must contain only uppercase alphabetic characters with no spaces." << std::endl;
+            return "";
+        }
+        if (!is_valid_message(key)) { // return error message if key is not valid
+            std::cerr << "Error: Key must contain only uppercase alphabetic characters with no spaces." << std::endl;
+            return "";
+        }
+
+        size_t m = key.size();
+        std::string keystream = key;
+
+        // Generate keystream to match message length
+        while (keystream.size() < message.size()) {
+            std::string prev_block = keystream.substr(keystream.size() - m, m);
+            std::string next_block;
+            for (char c : prev_block) {
+                size_t idx = alphabets.find(c);
+                idx = (idx + 1) % alphabets.size();
+                next_block += alphabets[idx];
+            }
+            keystream += next_block.substr(0, std::min(m, message.size() - keystream.size()));
+        }
+
+        for (size_t i = 0; i < message.size(); i++) {
+            size_t message_index = alphabets.find(message[i]);
+            size_t key_index = alphabets.find(keystream[i]);
+            result += alphabets[(message_index + key_index) % alphabets.size()];
+        }
+
+        return result;
+    }
+
+    //----------------------------------------------------------------------------------------------------------------
+
+    /// stream_cipher_decode decodes the cipher text that was encoded using the stream_cipher with the given key.
+    /// @param cipher_text The cipher text to be decoded.
+    /// @param key The keystream used during encoding.
+    /// @return The decoded message.
+
+    std::string stream_cipher_hw1_decode(const std::string& cipher_text, const std::string& key) {
+        std::string result;
+
+        if (!is_valid_message(cipher_text)) { // return error message if message is not valid
+            std::cerr << "Error: Message must contain only uppercase alphabetic characters with no spaces." << std::endl;
+            return "";
+        }
+        if (!is_valid_message(key)) { // return error message if key is not valid
+            std::cerr << "Error: Key must contain only uppercase alphabetic characters with no spaces." << std::endl;
+            return "";
+        }
+
+        size_t m = key.size();
+        std::string keystream = key;
+        // Generate keystream to match cipher_text length
+        while (keystream.size() < cipher_text.size()) {
+            std::string prev_block = keystream.substr(keystream.size() - m, m);
+            std::string next_block;
+            for (char c : prev_block) {
+                size_t idx = alphabets.find(c);
+                idx = (idx + 1) % alphabets.size();
+                next_block += alphabets[idx];
+            }
+            keystream += next_block.substr(0, std::min(m, cipher_text.size() - keystream.size()));
+        }
+
+        for (size_t i = 0; i < cipher_text.size(); i++) {
+            size_t cipher_index = alphabets.find(cipher_text[i]);
+            size_t key_index = alphabets.find(keystream[i]);
+            result += alphabets[(cipher_index - key_index + alphabets.size()) % alphabets.size()];
+        }
+
+        return result;
+    }
+
 };
