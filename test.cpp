@@ -70,7 +70,7 @@ int main() {
 
     //----------------------------------------------------------------------------------------------------------------
 
-    std::string alphabets = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    // std::string alphabets = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
     // auto start = std::chrono::high_resolution_clock::now();
 
@@ -101,40 +101,47 @@ int main() {
 
     //----------------------------------------------------------------------------------------------------------------
 
-    std::string candidateKey = "";
-    int L = 5; // fixed key length determined in the above step.
+    // std::string candidateKey = "";
+    // int L = 5; // fixed key length determined in the above step.
 
-    // Breaking the stream cipher with key length L.
-    for (int pos = 0; pos < L; pos++) {
-        double bestScore = 1e18;
-        char bestChar;
+    // // Breaking the stream cipher with key length L.
+    // for (int pos = 0; pos < L; pos++) {
+    //     double bestScore = 1e18;
+    //     char bestChar;
 
-        // collect subsequence for this position.
-        std::string subseq = "";
-        for (int i = pos; i < ciphered_message.size(); i += L) {
-            subseq.push_back(ciphered_message[i]);
-        }
+    //     // collect subsequence for this position.
+    //     std::string subseq = "";
+    //     for (int i = pos; i < ciphered_message.size(); i += L) {
+    //         subseq.push_back(ciphered_message[i]);
+    //     }
 
-        // test all possible key chars
-        for (char character : alphabets) {
-            std::string decodedSubseq = crypto.stream_cipher_hw1_decode(subseq, std::string{ character });
+    //     // test all possible key chars
+    //     for (char character : alphabets) {
+    //         std::string decodedSubseq = crypto.stream_cipher_hw1_decode(subseq, std::string{ character });
 
-            double score = crypto.chi_squared_test(decodedSubseq);
-            if (score < bestScore) { // lower is better.
-                bestScore = score;
-                bestChar = character;
-            }
-        }
+    //         double score = crypto.chi_squared_test(decodedSubseq);
+    //         if (score < bestScore) { // lower is better.
+    //             bestScore = score;
+    //             bestChar = character;
+    //         }
+    //     }
 
-        candidateKey.push_back(bestChar);
-        std::cout << "Position : " << pos << " Character : '" << bestChar << "' with chi² = " << bestScore << std::endl;
-    }
+    //     candidateKey.push_back(bestChar);
+    //     std::cout << "Position : " << pos << " Character : '" << bestChar << "' with chi² = " << bestScore << std::endl;
+    // }
 
-    std::cout << "Candidate key = " << candidateKey << std::endl;
-    std::cout << "Deciphered text = " << crypto.stream_cipher_hw1_decode(ciphered_message, candidateKey) << std::endl;
+    // std::cout << "Candidate key = " << candidateKey << std::endl;
+    // std::cout << "Deciphered text = " << crypto.stream_cipher_hw1_decode(ciphered_message, candidateKey) << std::endl;
 
     //----------------------------------------------------------------------------------------------------------------
 
+    // test for permutation cipher
+    std::vector<int> perm_key = { 4, 3, 1, 0, 2 }; // example key
+    std::string perm_ciphered_message = crypto.permutation_cipher(normal_text, perm_key);
+    std::cout << "Permutation Ciphered message: " << perm_ciphered_message << std::endl;
+
+    std::string perm_deciphered_message = crypto.permutation_cipher_decode(perm_ciphered_message, perm_key);
+    std::cout << "Permutation Deciphered message: " << perm_deciphered_message << std::endl;
 
     return 0;
 }

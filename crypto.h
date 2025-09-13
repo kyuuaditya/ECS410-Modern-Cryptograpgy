@@ -399,4 +399,77 @@ public:
         return chi_squared;
     }
 
+    //----------------------------------------------------------------------------------------------------------------
+
+    /// permutation_cipher is a transposition cipher that rearranges the characters of the plaintext according to a specified permutation key.
+    /// @param message The message to be ciphered.
+    /// @param key The permutation key.
+    /// @return The ciphered message.
+    std::string permutation_cipher(const std::string& message, const std::vector<int>& key) {
+        std::string result;
+        size_t n = key.size();
+
+        if (!is_valid_message(message)) { // return error message if message is not valid
+            std::cerr << "Error: Message must contain only uppercase alphabetic characters with no spaces." << std::endl;
+            return "";
+        }
+        if (n == 0 || *std::max_element(key.begin(), key.end()) >= static_cast<int>(n) || *std::min_element(key.begin(), key.end()) < 0) {
+            std::cerr << "Error: Invalid permutation key." << std::endl;
+            return "";
+        }
+
+        // Pad the message to make its length a multiple of n
+        std::string padded_message = message;
+        while (padded_message.size() % n != 0) {
+            padded_message += 'X'; // Padding character
+        }
+        for (size_t i = 0; i < padded_message.size(); i += n) {
+            for (int j : key) {
+                result += padded_message[i + j];
+            }
+        }
+
+        return result;
+    }
+
+    //----------------------------------------------------------------------------------------------------------------
+
+    /// permutation_cipher_decode decodes the cipher text that was encoded using the permutation_cipher with the given key.
+    /// @param cipher_text The cipher text to be decoded.
+    /// @param key The permutation key used during encoding.
+    /// @return The decoded message.
+    std::string permutation_cipher_decode(const std::string& cipher_text, const std::vector<int>& key) {
+        std::string result;
+        size_t n = key.size();
+
+        if (!is_valid_message(cipher_text)) { // return error message if message is not valid
+            std::cerr << "Error: Message must contain only uppercase alphabetic characters with no spaces." << std::endl;
+            return "";
+        }
+        if (n == 0 || *std::max_element(key.begin(), key.end()) >= static_cast<int>(n) || *std::min_element(key.begin(), key.end()) < 0) {
+            std::cerr << "Error: Invalid permutation key." << std::endl;
+            return "";
+        }
+
+        // Create inverse permutation key
+        std::vector<int> inverse_key(n);
+        for (size_t i = 0; i < n; i++) {
+            inverse_key[key[i]] = i;
+        }
+
+        // Pad the cipher_text to make its length a multiple of n. (which would already be padded in most cases as this is a decipher function)
+        std::string padded_message = cipher_text;
+        while (padded_message.size() % n != 0) {
+            padded_message += 'X'; // Padding character
+        }
+
+        for (size_t i = 0; i < padded_message.size(); i += n) {
+            for (int j : inverse_key) {
+                result += padded_message[i + j];
+            }
+        }
+
+        return result;
+    }
+
 };
