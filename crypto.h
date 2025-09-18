@@ -4,6 +4,8 @@
 #include <cctype>
 #include <numeric> // for std::gcd
 #include <vector>
+#include <chrono> // for clock
+#include <cmath>  // for pow
 
 class Crypto {
 public:
@@ -15,6 +17,8 @@ public:
         0.008,0.040,0.024,0.067,0.075,0.019,0.001,0.060,0.063,0.091,
         0.028,0.010,0.023,0.001,0.020,0.001
     };
+    size_t counter = 0;
+    size_t total = 0;
 
     ///function to check if the input message is valid (only contains alphabetic characters, no-spaces and uppercase only)
     bool is_valid_message(const std::string& message) {
@@ -373,6 +377,8 @@ public:
         return ic;
     }
 
+    //----------------------------------------------------------------------------------------------------------------
+
     /// chi_squared_test calculates the Chi-squared statistic for the given text.
     /// @param text The text to calculate the Chi-squared statistic for.
     /// @return The Chi-squared statistic.
@@ -472,4 +478,38 @@ public:
         return result;
     }
 
+    //----------------------------------------------------------------------------------------------------------------
+
+    /// tester function for finding the key length used by using index of coincidence.
+    /// @param cipher_text The cipher text to be decoded.
+    /// @param existing_key The existing key to be used for decoding.
+    /// @return most likely length of the key.
+    int find_key_length(const std::string& cipher_text, int existing_key_length = 1) {
+        int char_to_calc = 10;
+        float sum_IC = 0.0;
+        total = 0;
+        counter = 0;
+        for (int i = 0; i < pow(char_to_calc, existing_key_length); i++) {
+            std::string key = "";
+            for (int j = 0; j < existing_key_length; j++) {
+                key += std::string{ alphabets[rand() % alphabets.size()] };
+            }
+            double text_IC = index_of_coincidence(stream_cipher_hw1_decode(cipher_text, key));
+            sum_IC += text_IC;
+            if (text_IC > 0.050) {
+                counter++;
+            }
+            total++;
+        }
+        double avg_IC = sum_IC / pow(char_to_calc, existing_key_length);
+        if (avg_IC > 0.045 || (float)counter / total > 0.10) {
+            std::cout << "Key Length: " << existing_key_length << " Average IC: " << avg_IC << " total_checks: " << total << " |IC>0.050|: " << counter << std::endl;
+            return existing_key_length;
+        }
+        else {
+            std::cout << "Key Length is not " << existing_key_length << " , Average IC: " << avg_IC << " total_checks: " << total << " |IC>0.050|: " << counter << std::endl;
+            if (existing_key_length > 10) return -1;
+            return find_key_length(cipher_text, existing_key_length + 1);
+        }
+    }
 };
